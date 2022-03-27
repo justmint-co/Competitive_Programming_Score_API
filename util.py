@@ -12,6 +12,6 @@ def get_safe_nested_key(keys, dictionary):
     return None
 
 
-if __name__ == '__main__':
-    assert get_safe_nested_key(['a', 'b', 'c'], {"a": {"b": {"c": "C"}}}) == "C"
-    assert get_safe_nested_key(['a', 'b', 'c'], {"a": "A", "b": "B", "c": "C"}) is None
+if __name__ == "__main__":
+    assert get_safe_nested_key(["a", "b", "c"], {"a": {"b": {"c": "C"}}}) == "C"
+    assert get_safe_nested_key(["a", "b", "c"], {"a": "A", "b": "B", "c": "C"}) is None
