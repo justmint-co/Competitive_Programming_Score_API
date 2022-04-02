@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_restful import Api, Resource
 from flask_cors import CORS
 import json
+from version import version
 
 from details_soup import UserData, UsernameError, PlatformError, BrokenChangesError
 
@@ -35,6 +36,7 @@ api.add_resource(Details, "/api/<string:platform>/<string:username>")
 def root():
     return json.dumps({
         'status': 'healthy',
+        'version': version,
     })
 
 
