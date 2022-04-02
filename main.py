@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flask_restful import Api, Resource
 from flask_cors import CORS
+import json
 
 from details_soup import UserData, UsernameError, PlatformError, BrokenChangesError
 
@@ -28,6 +29,13 @@ class Details(Resource):
 
 
 api.add_resource(Details, "/api/<string:platform>/<string:username>")
+
+
+@app.route('/')
+def root():
+    return json.dumps({
+        'status': 'healthy',
+    })
 
 
 @app.errorhandler(404)
