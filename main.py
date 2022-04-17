@@ -4,7 +4,13 @@ from flask_cors import CORS
 import json
 from version import version
 
-from details_soup import UserData, UsernameError, PlatformError, BrokenChangesError
+from details_soup import (
+    UserData,
+    UserDataVerify,
+    UsernameError,
+    PlatformError,
+    BrokenChangesError,
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -29,15 +35,38 @@ class Details(Resource):
             return {"status": "Failed", "details": "API broken due to site changes"}
 
 
+class Verify(Resource):
+    def get(self, platform, username, verifycode):
+        user_data_verify = UserDataVerify(username)
+
+        try:
+            return user_data_verify.verify(platform, verifycode)
+
+        except UsernameError:
+            return {"status": "Failed", "details": "Invalid username"}
+
+        except PlatformError:
+            return {"status": "Failed", "details": "Invalid Platform"}
+
+        except BrokenChangesError:
+            return {"status": "Failed", "details": "API broken due to site changes"}
+
+
 api.add_resource(Details, "/api/<string:platform>/<string:username>")
+api.add_resource(
+    Verify,
+    "/api/verify/<string:platform>/<string:username>/verifycode/<string:verifycode>",
+)
 
 
-@app.route('/')
+@app.route("/")
 def root():
-    return json.dumps({
-        'status': 'healthy',
-        'version': version,
-    })
+    return json.dumps(
+        {
+            "status": "healthy",
+            "version": version,
+        }
+    )
 
 
 @app.errorhandler(404)

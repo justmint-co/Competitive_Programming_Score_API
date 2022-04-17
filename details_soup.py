@@ -293,7 +293,7 @@ class UserData:
 
         loader_or_rank = details_container[2].text.split()[1]
         points = None
-        if loader_or_rank.lower() == 'leader':
+        if loader_or_rank.lower() == "leader":
             points = details_container[2].text.split()[2][1:]
             rank = 1
         else:
@@ -621,6 +621,89 @@ class UserData:
 
         if platform == "leetcode":
             return self.__leetcode_v2()
+
+        if platform == "atcoder":
+            return self.__atcoder()
+
+        raise PlatformError("Platform not Found")
+
+
+class UserDataVerify:
+    def __init__(self, username=None):
+        self.__username = username
+
+    def update_username(self, username):
+        self.__username = username
+
+    def __codechef(self):
+        url = "https://www.codechef.com/users/{}".format(self.__username)
+
+    def __leetcode_v2(self, verifycode):
+        url = f"https://leetcode.com/{self.__username}"
+
+        page = requests.get(url)
+
+        if page.status_code != 200:
+            raise UsernameError("User not Found")
+
+        try:
+            payload = {
+                "operationName": "getUserProfile",
+                "variables": {"username": self.__username},
+                "query": """
+                    query getUserProfile($username: String!) {
+                        matchedUser(username: $username) {
+                            profile {
+                                aboutMe
+                            }
+                        }
+                    }
+                        """,
+            }
+            res = requests.post(
+                url="https://leetcode.com/graphql",
+                json=payload,
+                headers={"referer": f"https://leetcode.com/{self.__username}/"},
+            )
+            res.raise_for_status()
+            res = res.json()
+            aboutMe = res["data"]["matchedUser"]["profile"]["aboutMe"]
+            if verifycode not in aboutMe:
+                return {
+                    "status": "Failed",
+                    "isVerified": False,
+                }
+            return {
+                "status": "Success",
+                "isVerified": True,
+            }
+        except Exception as E:
+            raise BrokenChangesError(E)
+
+    def __spoj(self):
+        url = "https://www.spoj.com/users/{}/".format(self.__username)
+
+    def __codeforces(self):
+        pass
+
+    def verify(self, platform, verifycode):
+        if platform == "codechef":
+            return self.__codechef()
+
+        if platform == "codeforces":
+            return self.__codeforces()
+
+        if platform == "spoj":
+            try:
+                return self.__spoj()
+            except AttributeError:
+                raise UsernameError("User not Found")
+
+        if platform == "interviewbit":
+            return self.__interviewbit()
+
+        if platform == "leetcode":
+            return self.__leetcode_v2(verifycode)
 
         if platform == "atcoder":
             return self.__atcoder()
