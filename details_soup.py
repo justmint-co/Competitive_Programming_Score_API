@@ -291,8 +291,15 @@ class UserData:
         soup = BeautifulSoup(page.text, "html.parser")
         details_container = soup.find_all("p")
 
-        points = details_container[2].text.split()[3][1:]
-        rank = details_container[2].text.split()[2][1:]
+        loader_or_rank = details_container[2].text.split()[1]
+        points = None
+        if loader_or_rank.lower() == 'leader':
+            points = details_container[2].text.split()[2][1:]
+            rank = 1
+        else:
+            points = details_container[2].text.split()[3][1:]
+            rank = details_container[2].text.split()[2][1:]
+
         join_date = (
             details_container[1].text.split()[1]
             + " "
