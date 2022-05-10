@@ -453,6 +453,10 @@ class UserData:
                 ["data", "matchedUser", "profile", "ranking"], response
             )
 
+            global_ranking = get_safe_nested_key(
+                ["data", "userContestRanking", "globalRanking"], response
+            )
+
             reputation = get_safe_nested_key(
                 ["data", "matchedUser", "profile", "reputation"], response
             )
@@ -552,6 +556,7 @@ class UserData:
                 "contribution_problems": str(contribution_problems),
                 "contribution_testcases": str(contribution_testcases),
                 "reputation": str(reputation),
+                "global_ranking": global_ranking,
             }
 
         url = f"https://leetcode.com/{self.__username}"
@@ -562,33 +567,36 @@ class UserData:
             "variables": {"username": self.__username},
             "query": """
                 query getUserProfile($username: String!) {
-                  allQuestionsCount {
-                    difficulty
-                    count
-                  }
-                  matchedUser(username: $username) {
-                    contributions {
-                      points
-                      questionCount
-                      testcaseCount
-                    }
-                    profile {
-                      reputation
-                      ranking
-                    }
-                    submitStats {
-                      acSubmissionNum {
+                    allQuestionsCount {
                         difficulty
                         count
-                        submissions
-                      }
-                      totalSubmissionNum {
-                        difficulty
-                        count
-                        submissions
-                      }
                     }
-                  }
+                    matchedUser(username: $username) {
+                        contributions {
+                            points
+                            questionCount
+                            testcaseCount
+                        }
+                        profile {
+                            reputation
+                            ranking
+                        }
+                        submitStats {
+                                acSubmissionNum {
+                                difficulty
+                                count
+                                submissions
+                            }
+                            totalSubmissionNum {
+                                difficulty
+                                count
+                                submissions
+                            }
+                        }
+                    }
+                    userContestRanking(username: $username) {
+                        globalRanking
+                    }
                 }
             """,
         }
