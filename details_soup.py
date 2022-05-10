@@ -452,8 +452,6 @@ class UserData:
             ranking = get_safe_nested_key(
                 ["data", "matchedUser", "profile", "ranking"], response
             )
-            if ranking > 100000:
-                ranking = "~100000"
 
             reputation = get_safe_nested_key(
                 ["data", "matchedUser", "profile", "reputation"], response
